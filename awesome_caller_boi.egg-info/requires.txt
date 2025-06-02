@@ -1,0 +1,4 @@
+fastapi>=0.70
+uvicorn>=0.15
+websockets>=10.0
+twilio>=7.0
