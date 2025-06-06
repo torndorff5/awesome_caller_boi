@@ -8,3 +8,5 @@ awesome_caller_boi.egg-info/requires.txt
 awesome_caller_boi.egg-info/top_level.txt
 call_logic/__init__.py
 call_logic/core.py
+call_logic/models/__init__.py
+call_logic/models/transcripts.py
