@@ -1,10 +1,11 @@
 import os, json, base64, asyncio, websockets, audioop
+from typing import Callable, Any
+
 from fastapi import APIRouter, Request, WebSocket
 from fastapi.responses import HTMLResponse
 from fastapi.websockets import WebSocketDisconnect
 from twilio.twiml.voice_response import VoiceResponse, Connect
-from middleware import middleware
-from models.transcripts import Transcript
+from call_logic.models.transcripts import Transcript
 
 _call_sid_to_phone: dict[str, str] = {}
 
@@ -24,7 +25,8 @@ SHOW_TIMING_MATH = False
 def create_call_router(
         get_system_message,
         get_system_greeting,
-        voice
+        voice,
+        on_call_complete: Callable[[Transcript], Any],
 ):
 
     router = APIRouter()
@@ -106,10 +108,10 @@ def create_call_router(
                                 mark_queue.pop(0)
                         elif data['event'] == 'stop':
                             print(f"sending to middleware: {transcript}")
-                            middleware(transcript)
+                            await on_call_complete(transcript)
                 except WebSocketDisconnect:
                     print("Client disconnected.")
-                    middleware(transcript)
+                    await on_call_complete(transcript)
                     if openai_ws.open:
                         await openai_ws.close()
 

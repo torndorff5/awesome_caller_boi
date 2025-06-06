@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name="awesome_caller_boi",               # your package name
-    version="0.1.0",
+    version="0.2.0",
     author="Orndorff Automation",
     author_email="torndorff5@gmail.com",
     description="A FastAPI router + Twilio⇆OpenAI realtime streaming helper",
@@ -15,7 +15,7 @@ setup(
         "fastapi>=0.70",
         "uvicorn>=0.15",
         "websockets>=10.0",
-        "twilio>=7.0"
+        "twilio>=7.0",
     ],
     classifiers=[
         "Programming Language :: Python :: 3",
