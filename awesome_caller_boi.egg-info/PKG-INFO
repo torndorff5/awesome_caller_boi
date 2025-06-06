@@ -26,6 +26,7 @@ A small Python package that exposes a FastAPI router to connect Twilio’s voice
 - Encodes and forwards OpenAI’s audio responses back to Twilio.
 - Automatically handles speech interruptions (caller starts speaking mid-response).
 - Easy to configure with your own `get_system_message()` and `get_system_greeting()` callbacks.
+- Put your OpenAi key in your enviornment variables and call it OPENAI_API_KEY
 
 ## Installation
 
