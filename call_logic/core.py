@@ -6,6 +6,7 @@ from fastapi.responses import HTMLResponse
 from fastapi.websockets import WebSocketDisconnect
 from twilio.twiml.voice_response import VoiceResponse, Connect
 from call_logic.models.transcripts import Transcript
+from knowledge_base import knowledge_base
 
 _call_sid_to_phone: dict[str, str] = {}
 
@@ -121,11 +122,28 @@ def create_call_router(
                 try:
                     async for openai_message in openai_ws:
                         response = json.loads(openai_message)
+                        print(response.get("type"))
+                        print(response)
 
                         # ─── ONE-SHOT USER “WHISPER” ─────────────────────────────────
                         if response.get("type") == "conversation.item.input_audio_transcription.completed":
                             transcript.call_text += f"User: {response.get('transcript')}"
                             print(transcript.call_text)
+
+                        # # function event
+                        elif response.get("type") == "response.function_call_arguments.done":
+                            args = json.loads(response.get("arguments", {}))
+                            answer = knowledge_base(args.get("query"))
+                            await openai_ws.send(json.dumps(
+                                {
+                                    "type": "conversation.item.create",
+                                    "item": {
+                                        "type": "function_call_output",
+                                        "call_id": response.get("call_id"),
+                                        "output": answer,
+                                    }
+                                }))
+                            await openai_ws.send(json.dumps({"type": "response.create"}))
 
                         elif response.get("type") == "response.audio_transcript.done":
                             # End‐of-assistant turn: newline
@@ -224,7 +242,7 @@ def create_call_router(
         session_update = {
             "type": "session.update",
             "session": {
-                "turn_detection": {"type": "server_vad", "threshold": 0.7},
+                "turn_detection": {"type": "server_vad", "threshold": 0.9},
                 "input_audio_format": "pcm16",
                 "output_audio_format": "g711_ulaw",
                 "voice": voice,
@@ -232,6 +250,25 @@ def create_call_router(
                 "modalities": ["text", "audio"],
                 "input_audio_transcription":  {"model": "whisper-1"},
                 "temperature": 0.8,
+                "tools":[
+                    {
+                        "type": "function",
+                        "name": "knowledge_base",
+                        "description": "Queries against the knowledge base for answers regarding lanking tech support",
+                        "parameters":{
+                            "type":"object",
+                            "properties": {
+                                "query": {
+                                    "type": "string",
+                                    "description": "the question or issue of the customer",
+                                }
+                            },
+                            "required": ["query"],
+                            "additionalProperties": False
+                        }
+
+                    }
+                ]
             }
         }
         print('Sending session update:', json.dumps(session_update))

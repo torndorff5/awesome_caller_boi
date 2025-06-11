@@ -8,7 +8,7 @@ api_key = os.getenv("OPENAI_API_KEY")
 vector_store_id = os.getenv("VECTOR_STORE_ID")# get vector store, but practice with a hello world function in the realtime api.
 client = OpenAI(api_key=api_key)
 
-def get_response_from_openai(input_text: str, system_instructions: str) -> str:
+def knowledge_base(input_text: str) -> str:
     response = client.responses.create(
         model="gpt-4.1-mini",
         input=[
@@ -17,7 +17,7 @@ def get_response_from_openai(input_text: str, system_instructions: str) -> str:
                 "content": [
                     {
                         "type": "input_text",
-                        "text": system_instructions
+                        "text": os.getenv("SYSTEM_INSTRUCTIONS"),
                     }
                 ]
             },

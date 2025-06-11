@@ -55,6 +55,4 @@ def middleware(transcript):
         subject=SUBJECT,
         body=body
     )
-
-    # (Optional) Print or log a confirmation:
     print(f"Sent transcript email for {transcript.phone_number}")

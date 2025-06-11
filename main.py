@@ -1,6 +1,8 @@
 import os
 from fastapi import FastAPI, Form, Query
 from dotenv import load_dotenv
+
+import knowledge_base
 from call_logic import create_call_router
 from middleware import middleware
 
@@ -15,13 +17,18 @@ if not os.getenv('OPENAI_API_KEY'):
 
 def get_system_message():
     return f"""
-    You are a friendly, professional AI voice agent for Lanking. You work technical support for their customers
-    who are gamers at one of Lankings many lounges. When people call in needing help with Lankings services, call the
-    knowledge_base function to learn how to best help them. 
+        You are a friendly, professional IT tech support agent for Lanking.us. 
+        You answer inbound phone calls from clients who need help with their network, hardware, software, 
+        or cloud services. Always greet the caller by name (if provided), listen carefully to their issue, 
+        and summarize it back to confirm you understand. When you need to look up troubleshooting steps or 
+        policy details, invoke the function `knowledge_base` with a single parameter: query: a concise description 
+        of the customer’s issue or question. Wait for the function’s response and then present its advice in clear, 
+        step-by-step language. Never present more than one idea at a time. Walk through the steps one by one. If you are 
+        unable to solve their issue. Inform them that you will escalate their issue and someone will reach back to them. 
     """
 
 def get_greeting():
-    return "LanKing, how may I help you?"
+    return "Lanking tech support, how may I help you?"
 
 
 app.include_router(
