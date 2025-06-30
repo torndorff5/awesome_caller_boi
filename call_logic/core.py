@@ -54,7 +54,7 @@ def create_call_router(
         await websocket.accept()
 
         async with (websockets.connect(
-            'wss://api.openai.com/v1/realtime?model=gpt-4o-realtime-preview-2024-12-17',
+            'wss://api.openai.com/v1/realtime?model=gpt-4o-realtime-preview-2025-06-03',
             extra_headers={
                 "Authorization": f"Bearer {os.getenv('OPENAI_API_KEY')}",
                 "OpenAI-Beta": "realtime=v1"
